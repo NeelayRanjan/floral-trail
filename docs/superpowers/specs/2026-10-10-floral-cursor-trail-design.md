@@ -75,11 +75,26 @@ Plain objects holding every tunable: ribbon widths, wobble amplitudes, meander, 
 loop-back probability, curl tightness, terminal weights, motif selection and frequency, fill mode, cohort
 window, lifetime, blur, back-tone fraction, density limit. Three to start: `ribbon`, `nouveau`, `botanical`.
 
-### Tuning panel
+### Tuning panel (slider bar across the top of the demo)
 
-Preset dropdown, sliders for key parameters, FPS readout, and an **auto-draw** toggle that drives a
-synthetic cursor along a looping, seeded path (for repeatable screenshots, performance checks, and
-judging the look hands-free).
+**Every** tunable value is exposed as a control so the user can play with the look live — not just a
+curated few.
+
+- **Schema-driven:** `presets.js` exports a parameter schema — for each parameter: `key`, `label`,
+  `group`, `type` (`range` / `color` / `toggle` / `select`), `min` / `max` / `step`, and whether it is
+  `live` (applies to existing growth immediately — e.g. ink weight, colours, blur, fade, lifetime) or
+  `new-growth` (affects only elements spawned after the change — e.g. tendril spacing, loop-back
+  probability). `panel.js` generates the controls from the schema, so any parameter added later gets a
+  slider automatically. Each control shows its current value and marks `new-growth` parameters.
+- **Layout:** a horizontal bar pinned to the top of the viewport, with collapsible groups — *Spine*,
+  *Tendrils*, *Terminals* (one weight slider per terminal kind), *Motifs*, *Line & Wobble*, *Depth &
+  Fade*, *Colours*. The bar itself collapses to a thin strip so the hero can be viewed unobstructed.
+  Pointer movement over the bar does not feed the trail.
+- **Global controls:** preset dropdown (loads that preset's values into every control), *Reset to preset*,
+  seed input + *Re-seed*, *Clear canvas*, auto-draw toggle (drives a synthetic cursor along a looping,
+  seeded path for repeatable screenshots, performance checks, and hands-free viewing), FPS readout.
+- **Keeping a tuned look:** *Copy settings* puts the current values on the clipboard as a JSON preset
+  object that can be pasted into `presets.js`; *Paste settings* loads one back.
 
 ## 2. File layout
 
@@ -94,9 +109,9 @@ prototype/
     geometry.js   resampling, normals, ribbon outline, spirals (pure)
     noise.js      1D value/simplex noise
     rng.js        seeded RNG
-    presets.js    preset definitions
+    presets.js    parameter schema + preset definitions
     render.js     Canvas 2D drawing, cohort buffers
-    panel.js      tuning UI
+    panel.js      top slider bar, generated from the schema
   assets/motifs.json
 tools/
   extract_motifs.py
@@ -229,7 +244,8 @@ of animating, global element cap.
 ## 6. Testing and verification
 
 - **Unit tests** (`node --test`): path resampling, ribbon outline offsetting, spiral/curl generator,
-  cohort lifecycle (grow → freeze → fade → cull), density grid rejection, seeded determinism.
+  cohort lifecycle (grow → freeze → fade → cull), density grid rejection, seeded determinism, and that
+  every preset defines a value within range for every schema parameter.
 - **Visual checks:** auto-draw with a fixed seed, screenshots via Playwright at fixed timestamps for each
   preset; shared with the user for review.
 - **Performance target:** sustained 60 fps at 1440p during 60 s of auto-draw with the element cap active.
