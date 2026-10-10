@@ -1,0 +1,235 @@
+[
+ {
+  "id": "bot_flower_1",
+  "type": "flower",
+  "presets": [
+   "botanical",
+   "nouveau"
+  ],
+  "src": "3a0d0e18-1bbb-4307-acc1-7cab5abc6bbf.png",
+  "box": [
+   238,
+   336,
+   332,
+   434
+  ],
+  "anchor": [
+   288,
+   362
+  ],
+  "angle": 90,
+  "size": 30,
+  "seed": [
+   262,
+   400
+  ],
+  "close": 4,
+  "open": 5
+ },
+ {
+  "id": "bot_flower_2",
+  "type": "flower",
+  "presets": [
+   "botanical"
+  ],
+  "src": "3a0d0e18-1bbb-4307-acc1-7cab5abc6bbf.png",
+  "box": [
+   364,
+   724,
+   448,
+   800
+  ],
+  "anchor": [
+   401,
+   740
+  ],
+  "angle": 90,
+  "size": 30,
+  "seed": [
+   385,
+   770
+  ],
+  "close": 4,
+  "open": 5
+ },
+ {
+  "id": "bot_flower_3",
+  "type": "flower",
+  "presets": [
+   "botanical",
+   "nouveau"
+  ],
+  "src": "3a0d0e18-1bbb-4307-acc1-7cab5abc6bbf.png",
+  "box": [
+   110,
+   648,
+   198,
+   730
+  ],
+  "anchor": [
+   157,
+   660
+  ],
+  "angle": 90,
+  "size": 30,
+  "seed": [
+   135,
+   700
+  ],
+  "close": 4,
+  "open": 5
+ },
+ {
+  "id": "bot_flower_4",
+  "type": "flower",
+  "presets": [
+   "botanical"
+  ],
+  "src": "3a0d0e18-1bbb-4307-acc1-7cab5abc6bbf.png",
+  "box": [
+   566,
+   282,
+   632,
+   340
+  ],
+  "anchor": [
+   600,
+   332
+  ],
+  "angle": -90,
+  "size": 20,
+  "seed": [
+   590,
+   312
+  ],
+  "close": 4,
+  "open": 5
+ },
+ {
+  "id": "bot_bloom_1",
+  "type": "bloom",
+  "presets": [
+   "botanical",
+   "nouveau"
+  ],
+  "src": "3a0d0e18-1bbb-4307-acc1-7cab5abc6bbf.png",
+  "box": [
+   472,
+   386,
+   628,
+   540
+  ],
+  "anchor": [
+   490,
+   402
+  ],
+  "angle": 40,
+  "size": 70,
+  "seed": [
+   520,
+   430
+  ],
+  "close": 4,
+  "open": 5
+ },
+ {
+  "id": "nv_leaf_1",
+  "type": "leaf",
+  "presets": [
+   "nouveau"
+  ],
+  "src": "01a1105a-be95-7305-90f3-761f8a99ad8d.png",
+  "box": [
+   268,
+   688,
+   395,
+   800
+  ],
+  "anchor": [
+   288,
+   708
+  ],
+  "angle": 33,
+  "size": 34,
+  "seed": [
+   330,
+   745
+  ],
+  "close": 4
+ },
+ {
+  "id": "nv_leaf_4",
+  "type": "leaf",
+  "presets": [
+   "nouveau"
+  ],
+  "src": "01a1105a-be95-7305-90f3-761f8a99ad8d.png",
+  "box": [
+   360,
+   985,
+   535,
+   1145
+  ],
+  "anchor": [
+   378,
+   1002
+  ],
+  "angle": 40,
+  "size": 38,
+  "seed": [
+   420,
+   1040
+  ],
+  "close": 4
+ },
+ {
+  "id": "nv_frill_1",
+  "type": "frill",
+  "presets": [
+   "nouveau"
+  ],
+  "src": "01a1105a-be95-7305-90f3-761f8a99ad8d.png",
+  "box": [
+   268,
+   688,
+   395,
+   800
+  ],
+  "anchor": [
+   288,
+   708
+  ],
+  "angle": 33,
+  "size": 20,
+  "seed": [
+   330,
+   745
+  ],
+  "close": 4
+ },
+ {
+  "id": "nv_frill_2",
+  "type": "frill",
+  "presets": [
+   "nouveau"
+  ],
+  "src": "01a1105a-be95-7305-90f3-761f8a99ad8d.png",
+  "box": [
+   360,
+   985,
+   535,
+   1145
+  ],
+  "anchor": [
+   378,
+   1002
+  ],
+  "angle": 40,
+  "size": 22,
+  "seed": [
+   420,
+   1040
+  ],
+  "close": 4
+ }
+]
