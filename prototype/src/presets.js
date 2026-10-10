@@ -77,36 +77,36 @@ export const SCHEMA = [
 
 const ribbon = {
   growSpeed: 900, smoothing: 120, meanderAmp: 40, meanderWavelength: 520, strandMin: 700, strandMax: 1300,
-  spineWidth: 14, widthNoise: 0.35, tailTaper: 160, tipTaper: 70,
-  tendrilSpacing: 150, tendrilChance: 0.85, alternateSides: 0.75, departMin: 20, departMax: 45,
-  lengthMin: 120, lengthMax: 320, tendrilWidth: 0.7, tendrilEndWidth: 0.25, bodyBend: 0.6,
-  curlRadius: 14, curlRamp: 3, loopBackChance: 0.45, outwardCurlChance: 0.4, subTendrilChance: 0.25,
+  spineWidth: 24, widthNoise: 0.4, tailTaper: 180, tipTaper: 90,
+  tendrilSpacing: 120, tendrilChance: 0.85, alternateSides: 0.75, departMin: 20, departMax: 45,
+  lengthMin: 120, lengthMax: 320, tendrilWidth: 0.6, tendrilEndWidth: 0.3, bodyBend: 0.6,
+  curlRadius: 16, curlRamp: 3, loopBackChance: 0.45, outwardCurlChance: 0.4, subTendrilChance: 0.35,
   droop: 0, growTime: 0.9,
-  wCurl: 6, wBall: 4, wHook: 1.5, wBud: 0, wLeaf: 0, wFlower: 0, ballSize: 1.1,
+  wCurl: 6, wBall: 4, wHook: 1.5, wBud: 0, wLeaf: 0, wFlower: 0, ballSize: 1.3,
   motifSet: 'ribbon', motifScale: 1, frillChance: 0, frillSpacing: 60, bloomRate: 0, slowSpeed: 120,
   clusterTendrils: 3, densityLimit: 10, maxElements: 2500,
-  inkWeight: 1.4, wobbleLow: 0.8, wobbleLowWave: 140, roughness: 0.15, roughnessWave: 6, fillMode: 'cut',
+  inkWeight: 1.6, wobbleLow: 0.8, wobbleLowWave: 140, roughness: 0.15, roughnessWave: 6, fillMode: 'cut',
   cohortWindow: 0.75, lifetime: 9, fadeStart: 0.45, ageTint: 0.5, blurMax: 0.8, backChance: 0.15, backMix: 0.55,
   ink: '#1d1a17', paper: '#f6f1e8', fill: '#ffffff',
 };
 
 const nouveau = {
   ...ribbon,
-  meanderAmp: 55, spineWidth: 16, widthNoise: 0.55, tendrilSpacing: 120, loopBackChance: 0.3,
+  meanderAmp: 55, spineWidth: 22, widthNoise: 0.55, tendrilSpacing: 120, loopBackChance: 0.3,
   wCurl: 4, wBall: 2, wHook: 2, wBud: 2, wLeaf: 3, wFlower: 1,
-  motifSet: 'nouveau', frillChance: 0.35, frillSpacing: 45, bloomRate: 0.8,
+  motifSet: 'nouveau', motifScale: 1.8, frillChance: 0.35, frillSpacing: 45, bloomRate: 0.8,
   inkWeight: 1.6, wobbleLow: 1.4, roughness: 0.5, fillMode: 'fill',
   ink: '#151311', paper: '#e9e6df', fill: '#ffffff',
 };
 
 const botanical = {
   ...ribbon,
-  meanderAmp: 30, spineWidth: 3.5, widthNoise: 0.1, tailTaper: 40, tipTaper: 20,
+  meanderAmp: 30, spineWidth: 4.5, widthNoise: 0.1, tailTaper: 40, tipTaper: 20,
   tendrilSpacing: 90, tendrilChance: 0.9, departMin: 30, departMax: 70, lengthMin: 80, lengthMax: 260,
   tendrilWidth: 0.8, tendrilEndWidth: 0.7, bodyBend: 0.3, curlRadius: 30, loopBackChance: 0,
   outwardCurlChance: 0.5, subTendrilChance: 0.3, droop: 1.6,
   wCurl: 0.5, wBall: 0, wHook: 0, wBud: 0, wLeaf: 0, wFlower: 7,
-  motifSet: 'botanical', motifScale: 1.2, bloomRate: 0.6,
+  motifSet: 'botanical', motifScale: 1.7, bloomRate: 0.6,
   inkWeight: 1.3, wobbleLow: 0.3, roughness: 0.05,
 };
 
