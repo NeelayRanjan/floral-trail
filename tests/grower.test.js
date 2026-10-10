@@ -25,7 +25,7 @@ const FAST = { growSpeed: 1e6, meanderAmp: 0 };
 
 test('spine growth is capped by growSpeed * dt', () => {
   const { scene, grower } = setup({ growSpeed: 300, meanderAmp: 0, tendrilChance: 0 });
-  grower.feed(line(0, 600));
+  grower.feed(line(0, 90)); // short backlog: no catch-up boost
   grower.update(0.1, 0, 0);
   const len = spine(scene)[0].cum.at(-1);
   assert.ok(Math.abs(len - 30) < 0.5, `len=${len}`);
@@ -80,7 +80,11 @@ test('density limit caps spawns in a crowded area', () => {
   for (let i = 0; i < 10; i++) pts.push(...(i % 2 ? line(0, 40).reverse() : line(0, 40)));
   grower.feed(pts);
   grower.update(0.016, 0, 1000);
-  assert.ok(tendrils(scene).length <= 2, `tendrils=${tendrils(scene).length}`);
+  const perCell = new Map();
+  for (const t of tendrils(scene)) perCell.set(t.cellKey, (perCell.get(t.cellKey) || 0) + 1);
+  assert.ok(perCell.size >= 1);
+  for (const [cell, n] of perCell) assert.equal(n, 1, `cell ${cell} has ${n} spawns`);
+  assert.ok(tendrils(scene).length <= 8, `tendrils=${tendrils(scene).length}`); // ~19 spawn attempts were made
 });
 
 test('maxElements stops new spawns', () => {
@@ -127,4 +131,63 @@ test('no blooms while the cursor moves fast', () => {
   grower.feed(line(0, 60));
   for (let i = 0; i < 120; i++) grower.update(1 / 60, i / 60, 1000);
   assert.equal(all(scene).filter((e) => e.kind === 'motif').length, 0);
+});
+
+test('a cursor faster than growSpeed does not build an ever-growing backlog', () => {
+  const { grower } = setup({ growSpeed: 900, meanderAmp: 0, tendrilChance: 0, strandMin: 4000, strandMax: 4000 });
+  let x = 0, now = 0;
+  for (let f = 0; f < 300; f++) { // 5 s of input at ~2340 px/s
+    const pts = [];
+    for (let i = 0; i < 13; i++) pts.push({ x: (x += 3), y: 0 });
+    grower.feed(pts);
+    now += 1 / 60;
+    grower.update(1 / 60, now, 2400);
+  }
+  for (let f = 0; f < 75; f++) grower.update(1 / 60, (now += 1 / 60), 0); // 1.25 s after the cursor stops
+  assert.equal(grower.pending.length, 0);
+});
+
+test('a strand that sits idle ends with a terminal, and drawing again starts a fresh strand', () => {
+  const { scene, grower } = setup({ ...FAST, tendrilChance: 0, strandMin: 4000, strandMax: 4000 });
+  grower.feed(line(0, 300));
+  grower.update(0.016, 0, 1000);
+  assert.equal(tendrils(scene).length, 0);
+  grower.update(0.016, 2.0, 0); // nothing fed for 2 s
+  assert.equal(tendrils(scene).length, 1);
+  grower.feed(line(303, 600));
+  grower.update(0.016, 2.1, 1000);
+  assert.equal(spine(scene).filter((c) => c.sOffset === 0).length, 2);
+});
+
+test('the spine never turns tighter than its own width allows, even on a hairpin', () => {
+  const { scene, grower } = setup({ ...FAST, tendrilChance: 0, strandMin: 4000, strandMax: 4000, spineWidth: 24 });
+  grower.feed([...line(0, 300), ...line(0, 300, 6).reverse()]);
+  grower.update(0.016, 0, 1000);
+  const pts = spine(scene).flatMap((c) => c.points);
+  let worst = 0;
+  for (let i = 2; i < pts.length; i++) {
+    const seg = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+    const prevSeg = Math.hypot(pts[i - 1].x - pts[i - 2].x, pts[i - 1].y - pts[i - 2].y);
+    if (seg < 1e-9 || prevSeg < 1e-9) continue; // seam points are shared between chunks
+    const h1 = Math.atan2(pts[i - 1].y - pts[i - 2].y, pts[i - 1].x - pts[i - 2].x);
+    const h2 = Math.atan2(pts[i].y - pts[i - 1].y, pts[i].x - pts[i - 1].x);
+    let dh = Math.abs(h2 - h1);
+    if (dh > Math.PI) dh = 2 * Math.PI - dh;
+    worst = Math.max(worst, dh / seg);
+  }
+  assert.ok(worst <= 1 / (24 * 0.6) + 1e-6, `tightest radius ${1 / worst}px`);
+});
+
+test('a finished strand runs into its terminal at full width instead of pinching to a point', () => {
+  const { scene, grower } = setup({ ...FAST, tendrilChance: 0, strandMin: 4000, strandMax: 4000 });
+  grower.feed([...line(0, 300), { break: true }]);
+  grower.update(0.016, 0, 1000);
+  const last = spine(scene).at(-1);
+  const [t] = tendrils(scene);
+  assert.equal(last.head.ended, true);
+  assert.equal(last.taperEnd, false);
+  assert.equal(t.capStart, 'open');
+  assert.deepEqual(t.spineRef, { seed: last.seed, g: last.head.s });
+  const h = Math.atan2(t.points[1].y - t.points[0].y, t.points[1].x - t.points[0].x);
+  assert.ok(Math.abs(h) < 0.05, `terminal leaves along the spine heading (h=${h})`);
 });

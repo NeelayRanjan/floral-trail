@@ -59,11 +59,17 @@ export function ribbonShape(el, params, noise, now) {
     let half;
     if (isSpine) {
       // The tip taper is measured from the strand head, so it can span several chunks.
-      const distToEnd = el.head ? el.head.s - g : el.taperEnd ? total - s : Infinity;
+      // A strand that ended runs into its terminal at full width instead of tapering.
+      const distToEnd = el.head ? (el.head.ended ? Infinity : el.head.s - g) : el.taperEnd ? total - s : Infinity;
       half = spineHalfWidth(params, noise, el, g, distToEnd);
     }
     else {
       half = tendrilHalfWidth(params, el.scale, s / el.length);
+      if (el.spineRef) {
+        // Strand-end terminal: starts at the spine's own width, then narrows to a tendril.
+        const start = spineHalfWidth(params, noise, el.spineRef, el.spineRef.g, Infinity);
+        half = start + (half - start) * smoothstep(0, 0.4 * el.length, s);
+      }
       if (growTaper > 0) half *= 1 - growTaper * (1 - sineTaper(total - s, 30 * el.scale));
     }
     const f = Math.min(1, half / 2); // keep wobble from fattening tapered points

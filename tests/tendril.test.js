@@ -79,3 +79,9 @@ test('frills are placed along the body when frill motifs exist', () => {
 test('same seed builds the same tendril', () => {
   assert.equal(JSON.stringify(build({}, 5)), JSON.stringify(build({}, 5)));
 });
+
+test('an explicit depart angle overrides the random departure', () => {
+  const [r] = build({ depart: 0, loopBack: false, terminal: 'curl' });
+  const h = Math.atan2(r.points[1].y - r.points[0].y, r.points[1].x - r.points[0].x);
+  assert.ok(Math.abs(h) < 0.02, `h=${h}`);
+});

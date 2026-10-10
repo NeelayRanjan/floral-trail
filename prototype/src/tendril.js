@@ -31,7 +31,7 @@ export function buildTendril(opts) {
   const [lenLo, lenHi] = ordered(P.lengthMin, P.lengthMax);
   const length = Math.max(12, (opts.length ?? rng.range(lenLo, lenHi)) * scale);
   const [dLo, dHi] = ordered(P.departMin, P.departMax);
-  const depart = rng.range(dLo, dHi) * DEG;
+  const depart = opts.depart ?? rng.range(dLo, dHi) * DEG;
   const terminal = opts.terminal ?? pickTerminal(P, rng, hasMotif);
   const loopBack = opts.loopBack ?? rng.chance(P.loopBackChance);
 
@@ -88,7 +88,8 @@ export function buildTendril(opts) {
     out.push(...buildTendril({
       ...opts, x: at.point.x, y: at.point.y, heading: at.heading,
       side: k === 0 ? rng.sign() : -Math.sign(k), scale: scale * 0.55, depth: 1,
-      terminal: undefined, length: undefined, loopBack: false, now: now + growDuration * (s / length),
+      terminal: undefined, length: undefined, depart: undefined, loopBack: false,
+      now: now + growDuration * (s / length),
     }));
   }
   return out;

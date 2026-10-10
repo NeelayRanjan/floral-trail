@@ -113,3 +113,12 @@ test('bent spine chunks with seam neighbours share identical seam points', () =>
   assert.deepEqual(ra[1], rb[0]);
   assert.deepEqual(ra[2], rb[3]);
 });
+
+test('a strand-end terminal starts at the spine width, and an ended strand head does not taper', () => {
+  const P2 = { ...P, tendrilWidth: 0.5, tipTaper: 50 };
+  const el = { ...tendril(), capStart: 'open', spineRef: { seed: 1, g: 300 } };
+  const ring = ribbonShape(el, P2, flat, 2).fill.rings[0];
+  assert.ok(Math.abs(ring[0].y - 5) < 1e-9, `start half width ${ring[0].y}`);
+  const c = ribbonShape(chunk({ sOffset: 0, taperEnd: false, head: { s: 20, ended: true } }), P2, flat, 0);
+  assert.ok(Math.abs(c.fill.rings[0][2].y - 5) < 1e-9);
+});

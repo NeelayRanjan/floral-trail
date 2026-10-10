@@ -80,10 +80,16 @@ function step(dt) {
   }
 }
 
+// In static mode (reduced motion / ?pause=1) there is no frame loop, so actions repaint themselves.
+function repaint() {
+  if (staticMode) renderer.render(simTime);
+}
+
 const actions = {
   param(key, value, live) {
     if (live) renderer.invalidate();
     if (key === 'paper') applyPaper();
+    repaint();
   },
   preset(name) {
     state.presetName = name;
@@ -91,12 +97,16 @@ const actions = {
     renderer.invalidate();
     applyPaper();
     panel.refresh();
+    repaint();
   },
   seed(seed) {
     state.seed = seed;
     grower.setRng(createRng(seed));
   },
-  clear: clearAll,
+  clear() {
+    clearAll();
+    repaint();
+  },
   autoDraw(on) {
     state.autoDraw = on;
     if (!on) {
@@ -113,6 +123,7 @@ const actions = {
     renderer.invalidate();
     applyPaper();
     panel.refresh();
+    repaint();
   },
 };
 
@@ -125,7 +136,8 @@ applyPaper();
 const warmup = Number(query.get('warmup')) || 0;
 for (let i = 0; i < Math.round(warmup / FIXED_DT); i++) step(FIXED_DT);
 
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// ?motion=1 plays the animation even when the OS asks for reduced motion.
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches && query.get('motion') !== '1';
 if (reducedMotion && !warmup) {
   const wasAuto = state.autoDraw;
   state.autoDraw = true;
@@ -135,6 +147,9 @@ if (reducedMotion && !warmup) {
 
 if (reducedMotion || query.get('pause') === '1') {
   staticMode = true;
+  if (reducedMotion) {
+    document.querySelector('.hero p').textContent = 'animation paused (reduced motion) — add ?motion=1 to the URL to play';
+  }
   renderer.render(simTime);
 } else {
   let last = performance.now();
