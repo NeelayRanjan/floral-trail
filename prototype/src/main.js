@@ -5,6 +5,7 @@ import { PathSampler, Smoother, autoDrawPosition, clampDt } from './input.js';
 import { Renderer } from './render.js';
 import { PRESETS, SCHEMA, presetValues, sanitize } from './presets.js';
 import { loadMotifs } from './motifs.js';
+import { createPanel } from './panel.js';
 
 const FIXED_DT = 1 / 60;
 const query = new URLSearchParams(location.search);
@@ -115,8 +116,7 @@ const actions = {
   },
 };
 
-// Replaced by createPanel in Task 11.
-const panel = { refresh() {}, setFps() {} };
+const panel = createPanel(document.getElementById('panel'), { params, state, on: actions });
 
 window.__floral = { state, params, scene, renderer, step, actions, fps: 0, get simTime() { return simTime; } };
 
