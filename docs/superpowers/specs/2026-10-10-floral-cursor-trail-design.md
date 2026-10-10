@@ -205,6 +205,10 @@ Result is transparent outside the linework, so the effect composites over any he
 
 - Elements born within one cohort window (~0.75 s, preset) share an offscreen buffer. Elements within a
   cohort fuse; separate cohorts overlap with newer on top — this is the foreground/background effect.
+- **Occlusion:** in cut mode each cohort keeps two buffers — its linework and a mask of its filled
+  interiors. When compositing, the mask is first erased (`destination-out`) from what is already drawn,
+  then the linework is drawn. Newer growth therefore hides older lines beneath it, so crossings between
+  cohorts read as over/under weaves (as in the references), while crossings within a cohort fuse.
 - Each frame, cohorts composite oldest-first. With age a cohort loses opacity, its ink shifts toward a
   lighter tint, and it optionally blurs (0–1.5 px). Lifetime ~6–10 s (preset); fully faded cohorts and
   their elements are removed.
