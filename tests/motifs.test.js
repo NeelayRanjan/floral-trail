@@ -34,3 +34,15 @@ test('generated motifs.json is well formed', async () => {
     assert.ok(data.some((m) => m.type === type && m.presets.includes(set)), `${set}:${type}`);
   }
 });
+
+test('the library rounds off harsh corners in motif outlines', () => {
+  const square = [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5], [-0.5, -0.5]];
+  const lib = createMotifLibrary([{ id: 's', type: 'flower', presets: ['x'], baseSize: 10, silhouette: [square], ink: [] }]);
+  const ring = lib.get('s').silhouette[0];
+  const radii = ring.map(([u, v]) => Math.hypot(u, v));
+  assert.ok(ring.length > 8);
+  assert.ok(Math.max(...radii) < 0.68, `corners rounded (max r=${Math.max(...radii)})`);
+  assert.ok(Math.min(...radii) > 0.45, `sides kept (min r=${Math.min(...radii)})`);
+  const raw = createMotifLibrary([{ id: 's', type: 'flower', presets: ['x'], baseSize: 10, silhouette: [square], ink: [] }], { smooth: false });
+  assert.equal(raw.get('s').silhouette[0].length, 5);
+});

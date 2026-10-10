@@ -47,22 +47,27 @@ export class PathSampler {
   }
 }
 
-// Exponential smoothing of the cursor (time constant in ms) plus a smoothed speed estimate.
+// StreamLine-style stabiliser: two cascaded exponential filters (total time constant in ms), so the
+// stroke glides behind the cursor, wobble is absorbed and corners come out rounded with no kink.
+// Also keeps a smoothed speed estimate.
 export class Smoother {
   constructor() {
     this.reset();
   }
   reset() {
     this.pos = null;
+    this.mid = null;
     this.speed = 0;
   }
   update(target, dt, tauMs) {
     if (!this.pos) {
       this.pos = { x: target.x, y: target.y };
+      this.mid = { x: target.x, y: target.y };
       return this.pos;
     }
-    const a = tauMs <= 0 ? 1 : 1 - Math.exp((-dt * 1000) / tauMs);
-    const next = { x: this.pos.x + (target.x - this.pos.x) * a, y: this.pos.y + (target.y - this.pos.y) * a };
+    const a = tauMs <= 0 ? 1 : 1 - Math.exp((-dt * 1000) / (tauMs / 2));
+    this.mid = { x: this.mid.x + (target.x - this.mid.x) * a, y: this.mid.y + (target.y - this.mid.y) * a };
+    const next = { x: this.pos.x + (this.mid.x - this.pos.x) * a, y: this.pos.y + (this.mid.y - this.pos.y) * a };
     const v = dist(this.pos, next) / Math.max(dt, 1e-4);
     this.speed += (v - this.speed) * Math.min(1, dt * 8);
     this.pos = next;

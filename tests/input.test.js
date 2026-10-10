@@ -62,3 +62,14 @@ test('clampDt bounds frame gaps', () => {
   assert.equal(clampDt(-1), 0);
   assert.equal(clampDt(0.016), 0.016);
 });
+
+test('Smoother eases into a sudden move instead of kinking (StreamLine-style two-stage filter)', () => {
+  const s = new Smoother();
+  s.update({ x: 0, y: 0 }, 1 / 60, 100);
+  const first = s.update({ x: 100, y: 0 }, 1 / 60, 100);
+  const singlePole = 100 * (1 - Math.exp(-(1000 / 60) / 100)); // what a one-stage filter would move
+  assert.ok(first.x > 0 && first.x < singlePole * 0.8, `first=${first.x} singlePole=${singlePole}`);
+  let p;
+  for (let i = 0; i < 240; i++) p = s.update({ x: 100, y: 0 }, 1 / 60, 100);
+  assert.ok(Math.abs(p.x - 100) < 0.01);
+});

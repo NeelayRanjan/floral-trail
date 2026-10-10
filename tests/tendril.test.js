@@ -85,3 +85,17 @@ test('an explicit depart angle overrides the random departure', () => {
   const h = Math.atan2(r.points[1].y - r.points[0].y, r.points[1].x - r.points[0].x);
   assert.ok(Math.abs(h) < 0.02, `h=${h}`);
 });
+
+test('a tendril peels off along its parent and reaches the departure angle gradually', () => {
+  const [r] = build({ loopBack: false, terminal: 'curl', params: { ...P, outwardCurlChance: 1, peel: 0.3 } });
+  const headingAt = (i) => Math.atan2(r.points[i].y - r.points[i - 1].y, r.points[i].x - r.points[i - 1].x);
+  assert.ok(Math.abs(headingAt(1)) < 0.1, `starts tangent to the parent (h=${headingAt(1)})`);
+  const i35 = Math.round(r.points.length * 0.35);
+  assert.ok(headingAt(i35) > 0.55, `has turned out by 35% of its length (h=${headingAt(i35)})`);
+});
+
+test('with peel 0 a tendril leaves at the departure angle immediately', () => {
+  const [r] = build({ loopBack: false, terminal: 'curl', params: { ...P, outwardCurlChance: 1, peel: 0 } });
+  const h = Math.atan2(r.points[1].y - r.points[0].y, r.points[1].x - r.points[0].x);
+  assert.ok(Math.abs(h - 35 * Math.PI / 180) < 0.05, `h=${h}`);
+});

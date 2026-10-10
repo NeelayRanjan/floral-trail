@@ -88,8 +88,8 @@ export class Grower {
     this.maybeBloom(dt, now, cursorSpeed);
   }
 
-  // The tip steers toward the (meandering) target with a limited turn rate, so the ribbon
-  // never bends tighter than its own width and cannot fold into spikes on sharp reversals.
+  // The tip steers toward the (meandering) target with a limited turn rate (turnRadius × width),
+  // so bends stay round on both edges and the ribbon cannot crease or fold on sharp reversals.
   advance(a, b, now) {
     const len = dist(a, b);
     if (len < 1e-6) return;
@@ -104,7 +104,7 @@ export class Grower {
     const d = dist(st.tip, want);
     if (d < 0.5) return;
     const stepLen = Math.min(d, len * 1.5);
-    const minRadius = Math.max(4, P.spineWidth * 0.6);
+    const minRadius = Math.max(4, P.spineWidth * P.turnRadius);
     const raw = Math.atan2(want.y - st.tip.y, want.x - st.tip.x) - st.heading;
     const dh = Math.atan2(Math.sin(raw), Math.cos(raw));
     const maxTurn = stepLen / minRadius;
@@ -237,14 +237,13 @@ export class Grower {
     this.addAll(els, 'front', now, st.tip);
   }
 
-  // Long strands end and a new one starts beside the old tip, overlapping it like the references.
+  // Long strands end in a terminal and a new one starts from inside the old tip: its tapered tail
+  // is hidden in the old ribbon, so the two part ways as a smooth fork with no loose point.
   continueStrand(now) {
     const st = this.strand;
     const tip = st.tip, heading = st.heading;
-    const side = -st.lastSide;
     this.finishStrand(now);
-    const off = this.params.spineWidth * 1.4 * side;
-    this.startStrand({ x: tip.x - Math.sin(heading) * off, y: tip.y + Math.cos(heading) * off }, heading, now);
+    this.startStrand({ x: tip.x, y: tip.y }, heading, now);
   }
 
   maybeBloom(dt, now, speed) {

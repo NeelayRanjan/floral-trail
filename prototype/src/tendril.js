@@ -35,17 +35,26 @@ export function buildTendril(opts) {
   const terminal = opts.terminal ?? pickTerminal(P, rng, hasMotif);
   const loopBack = opts.loopBack ?? rng.chance(P.loopBackChance);
 
-  // Loop-back: an arc that turns 2*depart (+ margin) back toward the parent, crossing it.
+  // Peel-off: start tangent to the parent and swing out to the departure angle over peelLen,
+  // so the junction is a smooth divergence rather than a hard V.
+  const peelLen = (P.peel ?? 0) > 0 ? Math.max(12, Math.min(0.6, P.peel) * length) : 0;
+  // Loop-back: after peeling out, an arc turns 2*depart (+ margin) back toward the parent, crossing it.
   const bend = loopBack
-    ? (-side * (2 * depart + 0.6)) / (0.75 * length)
+    ? (-side * (2 * depart + 0.6)) / Math.max(12, 0.75 * length - peelLen)
     : ((rng.chance(P.outwardCurlChance) ? side : -side) * P.bodyBend) / length;
   const turn = Math.sign(bend) || side;
   const curlR = Math.max(1, P.curlRadius * Math.sqrt(scale));
   let k1 = bend, p = 1;
   if (terminal === 'curl' || terminal === 'ball') { k1 = turn / curlR; p = P.curlRamp; }
   else if (terminal === 'hook') { k1 = turn / (curlR * 0.8); p = P.curlRamp * 2.5; }
-  const curvature = curvatureProfile(length, bend, k1, p);
-  const { points, endHeading } = curvePath({ x, y, heading: heading + side * depart, length, curvature, droop: P.droop });
+  const profile = curvatureProfile(length, bend, k1, p);
+  // While a loop-back tendril is still peeling out, its return arc has not started yet.
+  const body = loopBack && peelLen > 0 ? (s) => profile(s) - (s < peelLen ? bend : 0) : profile;
+  const curvature = peelLen > 0
+    ? (s) => body(s) + (s < peelLen ? (side * depart * (1 - Math.cos((2 * Math.PI * s) / peelLen))) / peelLen : 0)
+    : body;
+  const heading0 = heading + (peelLen > 0 ? 0 : side * depart);
+  const { points, endHeading } = curvePath({ x, y, heading: heading0, length, curvature, droop: P.droop });
   const growDuration = P.growTime * rng.range(0.8, 1.2) * Math.sqrt(scale);
   const ribbon = {
     kind: 'ribbon', role: 'tendril', points, cum: cumulativeLengths(points), length, scale, terminal,

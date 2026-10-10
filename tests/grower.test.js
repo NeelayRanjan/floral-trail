@@ -160,7 +160,7 @@ test('a strand that sits idle ends with a terminal, and drawing again starts a f
 });
 
 test('the spine never turns tighter than its own width allows, even on a hairpin', () => {
-  const { scene, grower } = setup({ ...FAST, tendrilChance: 0, strandMin: 4000, strandMax: 4000, spineWidth: 24 });
+  const { scene, grower } = setup({ ...FAST, tendrilChance: 0, strandMin: 4000, strandMax: 4000, spineWidth: 24, turnRadius: 1.5 });
   grower.feed([...line(0, 300), ...line(0, 300, 6).reverse()]);
   grower.update(0.016, 0, 1000);
   const pts = spine(scene).flatMap((c) => c.points);
@@ -175,7 +175,7 @@ test('the spine never turns tighter than its own width allows, even on a hairpin
     if (dh > Math.PI) dh = 2 * Math.PI - dh;
     worst = Math.max(worst, dh / seg);
   }
-  assert.ok(worst <= 1 / (24 * 0.6) + 1e-6, `tightest radius ${1 / worst}px`);
+  assert.ok(worst <= 1 / (24 * 1.5) + 1e-6, `tightest radius ${1 / worst}px`);
 });
 
 test('a finished strand runs into its terminal at full width instead of pinching to a point', () => {
@@ -190,4 +190,13 @@ test('a finished strand runs into its terminal at full width instead of pinching
   assert.deepEqual(t.spineRef, { seed: last.seed, g: last.head.s });
   const h = Math.atan2(t.points[1].y - t.points[0].y, t.points[1].x - t.points[0].x);
   assert.ok(Math.abs(h) < 0.05, `terminal leaves along the spine heading (h=${h})`);
+});
+
+test('a continuing strand starts inside the old tip, so no loose pointed tail shows beside it', () => {
+  const { scene, grower } = setup({ ...FAST, tendrilChance: 0, strandMin: 300, strandMax: 300 });
+  grower.feed(line(0, 700));
+  grower.update(0.016, 0, 1000);
+  const starts = spine(scene).filter((c) => c.sOffset === 0);
+  const firstStrandEnd = spine(scene).filter((c) => c.head === starts[0].head).at(-1).points.at(-1);
+  assert.deepEqual(starts[1].points[0], firstStrandEnd);
 });

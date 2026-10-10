@@ -261,6 +261,21 @@ of animating, global element cap.
 3. Presets produce visibly different characters.
 4. The user, viewing it live, judges the concept feasible. Visual tuning after first viewing is expected.
 
+## Addendum (2026-10-10): StreamLine smoothing and soft edges
+
+Requested after first viewing: strokes should feel like Procreate's StreamLine, and harsh edges should go.
+
+- **StreamLine:** the cursor path is stabilised by two cascaded exponential filters (`smoothing`, shown
+  as "StreamLine (ms)"), so the stroke glides behind the cursor, wobble is absorbed and corners round.
+- **Round bends:** the spine tip steers toward the path with a minimum turn radius of
+  `turnRadius × spineWidth`, so the inside edge of a bend is never a crease.
+- **Peel-off junctions:** tendrils start tangent to their parent and swing out to the departure angle
+  over `peel × length`; a loop-back's return arc begins after the peel.
+- **Strand hand-over:** a continuing strand starts inside the old tip, so it forks smoothly from the
+  terminal instead of showing a loose pointed tail (replaces "begins slightly offset" in §3).
+- **Soft motifs:** motif outlines are resampled and Gaussian-smoothed when loaded.
+- Preset roughness lowered (ribbon 0.04, nouveau 0.2).
+
 ## Out of scope
 
 Framework integration (React/Next), production build, mobile/touch behaviour, copyright clearance of

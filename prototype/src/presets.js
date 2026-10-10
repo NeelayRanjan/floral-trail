@@ -9,7 +9,8 @@ const color = (key, label) => ({ key, label, group: 'Colours', type: 'color', li
 
 export const SCHEMA = [
   range('growSpeed', 'Grow speed (px/s)', 'Spine', 100, 3000, 10),
-  range('smoothing', 'Path smoothing (ms)', 'Spine', 0, 400, 5),
+  range('smoothing', 'StreamLine (ms)', 'Spine', 0, 800, 5),
+  range('turnRadius', 'Min turn radius (× width)', 'Spine', 0.3, 4, 0.05),
   range('meanderAmp', 'Meander amount (px)', 'Spine', 0, 150, 1),
   range('meanderWavelength', 'Meander wavelength (px)', 'Spine', 80, 1500, 10),
   range('strandMin', 'Strand length min (px)', 'Spine', 150, 4000, 10),
@@ -26,6 +27,7 @@ export const SCHEMA = [
   range('departMax', 'Departure angle max (°)', 'Tendrils', 0, 90, 1),
   range('lengthMin', 'Length min (px)', 'Tendrils', 20, 900, 5),
   range('lengthMax', 'Length max (px)', 'Tendrils', 20, 900, 5),
+  range('peel', 'Peel-off length (× length)', 'Tendrils', 0, 0.6, 0.01),
   range('tendrilWidth', 'Width (× spine)', 'Tendrils', 0.1, 1.5, 0.01, true),
   range('tendrilEndWidth', 'End width (× start)', 'Tendrils', 0, 1, 0.01, true),
   range('bodyBend', 'Body bend (rad)', 'Tendrils', 0, 4, 0.05),
@@ -76,16 +78,16 @@ export const SCHEMA = [
 ];
 
 const ribbon = {
-  growSpeed: 900, smoothing: 120, meanderAmp: 40, meanderWavelength: 520, strandMin: 700, strandMax: 1300,
+  growSpeed: 900, smoothing: 220, turnRadius: 1.2, meanderAmp: 40, meanderWavelength: 520, strandMin: 700, strandMax: 1300,
   spineWidth: 24, widthNoise: 0.4, tailTaper: 180, tipTaper: 90,
-  tendrilSpacing: 120, tendrilChance: 0.85, alternateSides: 0.75, departMin: 20, departMax: 45,
+  tendrilSpacing: 120, tendrilChance: 0.85, alternateSides: 0.75, departMin: 20, departMax: 45, peel: 0.3,
   lengthMin: 120, lengthMax: 320, tendrilWidth: 0.6, tendrilEndWidth: 0.3, bodyBend: 0.6,
   curlRadius: 16, curlRamp: 3, loopBackChance: 0.45, outwardCurlChance: 0.4, subTendrilChance: 0.35,
   droop: 0, growTime: 0.9,
   wCurl: 6, wBall: 4, wHook: 1.5, wBud: 0, wLeaf: 0, wFlower: 0, ballSize: 1.3,
   motifSet: 'ribbon', motifScale: 1, frillChance: 0, frillSpacing: 60, bloomRate: 0, slowSpeed: 120,
   clusterTendrils: 3, densityLimit: 10, maxElements: 2500,
-  inkWeight: 1.6, wobbleLow: 0.8, wobbleLowWave: 140, roughness: 0.15, roughnessWave: 6, fillMode: 'cut',
+  inkWeight: 1.6, wobbleLow: 0.8, wobbleLowWave: 140, roughness: 0.04, roughnessWave: 6, fillMode: 'cut',
   cohortWindow: 0.75, lifetime: 9, fadeStart: 0.45, ageTint: 0.5, blurMax: 0.8, backChance: 0.15, backMix: 0.55,
   ink: '#1d1a17', paper: '#f6f1e8', fill: '#ffffff',
 };
@@ -95,7 +97,7 @@ const nouveau = {
   meanderAmp: 55, spineWidth: 22, widthNoise: 0.55, tendrilSpacing: 120, loopBackChance: 0.3,
   wCurl: 4, wBall: 2, wHook: 2, wBud: 2, wLeaf: 3, wFlower: 1,
   motifSet: 'nouveau', motifScale: 1.8, frillChance: 0.35, frillSpacing: 45, bloomRate: 0.8,
-  inkWeight: 1.6, wobbleLow: 1.4, roughness: 0.5, fillMode: 'fill',
+  inkWeight: 1.6, wobbleLow: 1.4, roughness: 0.2, fillMode: 'fill',
   ink: '#151311', paper: '#e9e6df', fill: '#ffffff',
 };
 
