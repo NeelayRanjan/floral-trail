@@ -99,7 +99,7 @@ export class Grower {
     this.strand = {
       seed: rng.range(0, 500), points: [pos], s: 0, sTarget: 0, length: rng.range(lo, hi),
       nextSpawn: Math.max(20, P.tendrilSpacing) * rng.range(0.5, 1), lastSide: rng.sign(),
-      carry: { x: pos.x - target.x, y: pos.y - target.y }, chunk: null,
+      carry: { x: pos.x - target.x, y: pos.y - target.y }, chunk: null, chunks: [], head: { s: 0 },
     };
     this.ensureChunk(now);
   }
@@ -117,8 +117,9 @@ export class Grower {
     const last = st.points[st.points.length - 1];
     st.chunk = {
       kind: 'ribbon', role: 'spine', points: [last], cum: [0], sOffset: st.s, seed: st.seed,
-      taperEnd: true, born: now, growDuration: 0,
+      head: st.head, taperEnd: true, born: now, growDuration: 0,
     };
+    st.chunks.push(st.chunk);
     this.scene.add(st.chunk, 'front', now, P.cohortWindow);
   }
 
@@ -134,7 +135,13 @@ export class Grower {
     const ch = st.chunk;
     ch.cum.push(ch.cum[ch.cum.length - 1] + step);
     ch.points.push(q);
-    this.scene.touch(ch.cohort);
+    st.head.s = st.s;
+    // Chunks inside the tip-taper zone change width as the head moves on.
+    for (let i = st.chunks.length - 1; i >= 0; i--) {
+      const c = st.chunks[i];
+      if (c.sOffset + c.cum[c.cum.length - 1] < st.s - P.tipTaper - step) break;
+      this.scene.touch(c.cohort);
+    }
     while (st.s >= st.nextSpawn) {
       this.spawnAlongSpine(now);
       st.nextSpawn += Math.max(20, P.tendrilSpacing) * this.rng.range(0.7, 1.3);

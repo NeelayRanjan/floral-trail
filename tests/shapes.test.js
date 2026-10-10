@@ -21,7 +21,18 @@ test('spine half width follows width param with tail and tip tapers', () => {
   assert.equal(spineHalfWidth(tapered, flat, el, 0, 200), 0);
   assert.ok(Math.abs(spineHalfWidth(tapered, flat, el, 100, 200) - 5) < 1e-12);
   assert.equal(spineHalfWidth(tapered, flat, el, 150, 0), 0);
-  assert.ok(Math.abs(spineHalfWidth(tapered, flat, { ...el, taperEnd: false }, 150, 0) - 5) < 1e-12);
+  assert.ok(Math.abs(spineHalfWidth(tapered, flat, el, 150, Infinity) - 5) < 1e-12);
+});
+
+test('tip taper is measured from the strand head, so it spans chunk seams', () => {
+  const head = { s: 40 };
+  const P2 = { ...P, tipTaper: 50 };
+  const a = chunk({ sOffset: 0, taperEnd: false, head });
+  const b = chunk({ sOffset: 20, taperEnd: true, head, points: [{ x: 20, y: 0 }, { x: 30, y: 0 }, { x: 40, y: 0 }] });
+  const ya = ribbonShape(a, P2, flat, 0).fill.rings[0][2].y;
+  const yb = ribbonShape(b, P2, flat, 0).fill.rings[0][0].y;
+  assert.ok(Math.abs(ya - yb) < 1e-9, `seam ${ya} vs ${yb}`);
+  assert.ok(ya < 4.9, 'already tapering before the head chunk');
 });
 
 test('tendrilHalfWidth interpolates to the end ratio', () => {

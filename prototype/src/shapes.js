@@ -20,11 +20,12 @@ export function growProgress(el, now) {
   return clamp01((now - el.born) / el.growDuration);
 }
 
-// g = arc length from the strand start; distToEnd = arc length to this chunk's end.
+// g = arc length from the strand start; distToEnd = arc length to the strand's head
+// (Infinity when this point is not near a free end).
 export function spineHalfWidth(params, noise, el, g, distToEnd) {
   let half = 0.5 * params.spineWidth * Math.max(0.15, 1 + params.widthNoise * noise(g / 180 + el.seed * 3.1));
   half *= sineTaper(g, params.tailTaper);
-  if (el.taperEnd) half *= sineTaper(distToEnd, params.tipTaper);
+  half *= sineTaper(distToEnd, params.tipTaper);
   return half;
 }
 
@@ -56,7 +57,11 @@ export function ribbonShape(el, params, noise, now) {
     const s = cum[i];
     const g = isSpine ? el.sOffset + s : s;
     let half;
-    if (isSpine) half = spineHalfWidth(params, noise, el, g, total - s);
+    if (isSpine) {
+      // The tip taper is measured from the strand head, so it can span several chunks.
+      const distToEnd = el.head ? el.head.s - g : el.taperEnd ? total - s : Infinity;
+      half = spineHalfWidth(params, noise, el, g, distToEnd);
+    }
     else {
       half = tendrilHalfWidth(params, el.scale, s / el.length);
       if (growTaper > 0) half *= 1 - growTaper * (1 - sineTaper(total - s, 30 * el.scale));

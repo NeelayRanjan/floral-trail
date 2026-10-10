@@ -68,6 +68,8 @@ test('when the cohort window rolls over the spine continues in a new chunk shari
   assert.equal(b.taperEnd, true);
   assert.ok(Math.abs(b.sOffset - a.cum.at(-1)) < 1e-9);
   assert.notEqual(a.cohort, b.cohort);
+  assert.equal(a.head, b.head);
+  assert.ok(Math.abs(b.head.s - (b.sOffset + b.cum.at(-1))) < 1e-9);
 });
 
 test('density limit caps spawns in a crowded area', () => {
