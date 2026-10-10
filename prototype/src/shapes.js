@@ -70,7 +70,9 @@ export function ribbonShape(el, params, noise, now) {
     halfL[i] = Math.max(0, half + f * wobble(params, noise, g, seedL));
     halfR[i] = Math.max(0, half + f * wobble(params, noise, g, seedR));
   }
-  const { left, right } = ribbonSides(points, halfL, halfR);
+  const { left, right } = isSpine
+    ? ribbonSides(points, halfL, halfR, el.prev, el.next)
+    : ribbonSides(points, halfL, halfR);
   const capStart = isSpine ? (el.sOffset === 0 ? 'flat' : 'open') : el.capStart;
   const capEnd = isSpine ? (el.taperEnd ? 'flat' : 'open') : el.capEnd;
   const { polygon, runs } = ribbonOutline(points, left, right, capStart, capEnd);

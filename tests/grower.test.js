@@ -69,6 +69,8 @@ test('when the cohort window rolls over the spine continues in a new chunk shari
   assert.ok(Math.abs(b.sOffset - a.cum.at(-1)) < 1e-9);
   assert.notEqual(a.cohort, b.cohort);
   assert.equal(a.head, b.head);
+  assert.deepEqual(b.prev, a.points.at(-2));
+  assert.deepEqual(a.next, b.points[1]);
   assert.ok(Math.abs(b.head.s - (b.sOffset + b.cum.at(-1))) < 1e-9);
 });
 

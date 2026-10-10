@@ -103,3 +103,13 @@ test('shapeBounds covers every ring', () => {
   const b = shapeBounds([ribbonShape(chunk(), P, flat, 0)]);
   assert.deepEqual(b, { minX: 0, minY: -5, maxX: 20, maxY: 5 });
 });
+
+test('bent spine chunks with seam neighbours share identical seam points', () => {
+  const a = chunk({ sOffset: 10, points: [{ x: 0, y: 0 }, { x: 10, y: 0 }], cum: [0, 10], next: { x: 10, y: 10 } });
+  const b = chunk({ sOffset: 20, points: [{ x: 10, y: 0 }, { x: 10, y: 10 }], cum: [0, 10], prev: { x: 0, y: 0 } });
+  const ra = ribbonShape(a, P, flat, 0).fill.rings[0];
+  const rb = ribbonShape(b, P, flat, 0).fill.rings[0];
+  // polygon = left (2 pts) + right reversed (2 pts) for open caps
+  assert.deepEqual(ra[1], rb[0]);
+  assert.deepEqual(ra[2], rb[3]);
+});

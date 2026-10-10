@@ -110,14 +110,18 @@ export class Grower {
     const st = this.strand, P = this.params;
     const cohort = this.scene.cohortFor('front', now, P.cohortWindow);
     if (st.chunk && st.chunk.cohort === cohort) return;
-    if (st.chunk) {
-      st.chunk.taperEnd = false;
-      this.scene.touch(st.chunk.cohort);
+    const prevChunk = st.chunk;
+    if (prevChunk) {
+      prevChunk.taperEnd = false;
+      this.scene.touch(prevChunk.cohort);
     }
     const last = st.points[st.points.length - 1];
     st.chunk = {
       kind: 'ribbon', role: 'spine', points: [last], cum: [0], sOffset: st.s, seed: st.seed,
       head: st.head, taperEnd: true, born: now, growDuration: 0,
+      // Neighbours across the seam, so both chunks compute the same normal there.
+      prev: prevChunk && prevChunk.points.length > 1 ? prevChunk.points[prevChunk.points.length - 2] : null,
+      next: null, prevChunk,
     };
     st.chunks.push(st.chunk);
     this.scene.add(st.chunk, 'front', now, P.cohortWindow);
@@ -135,6 +139,11 @@ export class Grower {
     const ch = st.chunk;
     ch.cum.push(ch.cum[ch.cum.length - 1] + step);
     ch.points.push(q);
+    if (ch.points.length === 2 && ch.prevChunk) {
+      ch.prevChunk.next = q;
+      this.scene.touch(ch.prevChunk.cohort);
+      ch.prevChunk = null;
+    }
     st.head.s = st.s;
     // Chunks inside the tip-taper zone change width as the head moves on.
     for (let i = st.chunks.length - 1; i >= 0; i--) {

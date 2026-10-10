@@ -34,17 +34,19 @@ export function resample(points, spacing) {
   return out;
 }
 
-function tangentAt(points, i) {
+// `before` / `after` are optional neighbours beyond the ends (e.g. across a chunk seam).
+function tangentAt(points, i, before = null, after = null) {
   const n = points.length;
-  const a = points[Math.max(0, i - 1)], b = points[Math.min(n - 1, i + 1)];
+  const a = i === 0 && before ? before : points[Math.max(0, i - 1)];
+  const b = i === n - 1 && after ? after : points[Math.min(n - 1, i + 1)];
   const dx = b.x - a.x, dy = b.y - a.y;
   const len = Math.hypot(dx, dy) || 1;
   return { x: dx / len, y: dy / len };
 }
 
-export function normals(points) {
+export function normals(points, before = null, after = null) {
   return points.map((_, i) => {
-    const t = tangentAt(points, i);
+    const t = tangentAt(points, i, before, after);
     return { x: -t.y, y: t.x };
   });
 }
@@ -99,8 +101,8 @@ export function curvePath({ x, y, heading, length, curvature, droop = 0, step = 
   return { points, endHeading: h };
 }
 
-export function ribbonSides(points, halfL, halfR) {
-  const ns = normals(points);
+export function ribbonSides(points, halfL, halfR, before = null, after = null) {
+  const ns = normals(points, before, after);
   const left = [], right = [];
   for (let i = 0; i < points.length; i++) {
     const p = points[i], n = ns[i];

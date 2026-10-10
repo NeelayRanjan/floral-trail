@@ -106,3 +106,12 @@ test('round end cap bulges forward by the half width', () => {
 test('dist is euclidean', () => {
   assert.equal(dist({ x: 0, y: 0 }, { x: 3, y: 4 }), 5);
 });
+
+test('normals can use neighbours beyond the ends so adjacent chunks agree at the seam', () => {
+  const a = [{ x: 0, y: 0 }, { x: 10, y: 0 }];
+  const b = [{ x: 10, y: 0 }, { x: 10, y: 10 }];
+  const na = normals(a, null, b[1]).at(-1);
+  const nb = normals(b, a[0], null)[0];
+  assert.ok(Math.abs(na.x - nb.x) < 1e-12 && Math.abs(na.y - nb.y) < 1e-12);
+  assert.ok(Math.abs(na.x - -Math.SQRT1_2) < 1e-12 && Math.abs(na.y - Math.SQRT1_2) < 1e-12);
+});
